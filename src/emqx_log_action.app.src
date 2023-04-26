@@ -1,0 +1,15 @@
+{application, emqx_log_action, [
+    {description, "EMQX Log Action Plugin"},
+    {vsn, "5.0.0"},
+    {modules, []},
+    {registered, [emqx_log_action_sup]},
+    {applications, [kernel, stdlib]},
+    {mod, {emqx_log_action_app, []}},
+    {env, []},
+    {licenses, ["Apache-2.0"]},
+    {maintainers, ["EMQX Team <contact@emqx.io>"]},
+    {links, [
+        {"Homepage", "https://emqx.io/"},
+        {"Github", "https://github.com/savonarola/emqx-log-action"}
+    ]}
+]}.
