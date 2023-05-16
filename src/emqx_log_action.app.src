@@ -1,6 +1,6 @@
 {application, emqx_log_action, [
     {description, "EMQX Log Action Plugin"},
-    {vsn, "5.0.0"},
+    {vsn, "5.0.1"},
     {modules, []},
     {registered, [emqx_log_action_sup]},
     {applications, [kernel, stdlib]},

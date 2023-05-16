@@ -10,7 +10,33 @@
 
 log(Selected, _Envs, Args) ->
     Level = log_level(maps:get(level, Args, undefined)),
-    logger:log(Level, Selected).
+    logger:log(Level, format(Selected)).
+
+%%--------------------------------------------------------------------
+%% Internal functions
+%%--------------------------------------------------------------------
+
+%% Format in emqx_trace_formatter style
+
+format(Map) when is_map(Map) ->
+    kvs_to_iolist(maps:to_list(Map));
+format(Term) ->
+    to_iolist(Term).
+
+to_iolist(Atom) when is_atom(Atom) -> atom_to_list(Atom);
+to_iolist(Int) when is_integer(Int) -> integer_to_list(Int);
+to_iolist(Float) when is_float(Float) -> float_to_list(Float, [{decimals, 2}]);
+to_iolist(SubMap) when is_map(SubMap) -> ["[", kvs_to_iolist(maps:to_list(SubMap)), "]"];
+to_iolist(Char) -> emqx_logger_textfmt:try_format_unicode(Char).
+
+kvs_to_iolist(KVs) ->
+    lists:join(
+        ", ",
+        lists:map(
+            fun({K, V}) -> [to_iolist(K), ": ", to_iolist(V)] end,
+            KVs
+        )
+    ).
 
 log_level(<<"debug">>) ->
     debug;
