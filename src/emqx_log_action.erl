@@ -27,7 +27,7 @@ to_iolist(Atom) when is_atom(Atom) -> atom_to_list(Atom);
 to_iolist(Int) when is_integer(Int) -> integer_to_list(Int);
 to_iolist(Float) when is_float(Float) -> float_to_list(Float, [{decimals, 2}]);
 to_iolist(SubMap) when is_map(SubMap) -> ["[", kvs_to_iolist(maps:to_list(SubMap)), "]"];
-to_iolist(Char) -> emqx_logger_textfmt:try_format_unicode(Char).
+to_iolist(Char) -> try_format_unicode(Char).
 
 kvs_to_iolist(KVs) ->
     lists:join(
@@ -37,6 +37,25 @@ kvs_to_iolist(KVs) ->
             KVs
         )
     ).
+
+try_format_unicode(undefined) ->
+    "undefined";
+try_format_unicode(Char) ->
+    List =
+        try
+            case unicode:characters_to_list(Char) of
+                {error, _, _} -> error;
+                {incomplete, _, _} -> error;
+                Binary -> Binary
+            end
+        catch
+            _:_ ->
+                error
+        end,
+    case List of
+        error -> io_lib:format("~0p", [Char]);
+        _ -> List
+    end.
 
 log_level(<<"debug">>) ->
     debug;
